@@ -1,0 +1,481 @@
+<odoo>
+    <template id="portal_absences_template" name="Mes Absences">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="mb-0">Tableau de bord de <t t-esc="student.name"/></h3>
+                            </div>
+                            <t t-if="request.params.get('message') == 'success'">
+                              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                   Votre demande de justification a bien été envoyée à l'administration !
+                                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                              </div>
+                            </t>
+                            <div class="card-body">
+                                <h4>Mes Absences</h4>
+                                <table class="table table-hover mt-3">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date de l'absence</th>
+                                            <th>Matière</th>
+                                            <th>État</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="absences" t-as="absence">
+                                            <tr>
+                                                <td><span t-field="absence.date_absence"/></td>
+                                                <td><span t-field="absence.matiere_id.name"/></td>
+                                                <td>
+                                                    <span t-if="absence.is_justified" class="badge rounded-pill bg-success">Justifiée</span>
+                                                    <t t-if="not absence.is_justified">
+                                                      <form t-attf-action="/my/absence/justify/#{absence.id}" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                          <div class="d-flex flex-column gap-2">
+                                                             <input type="file" name="attachment" class="form-control form-control-sm" required="required" accept="image/*,application/pdf"/>
+                                                              <button type="submit" class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-upload me-1"/> Envoyer le certificat
+                                                              </button>
+                                                           </div>
+                                                      </form>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <a t-attf-href="/report/pdf/school.action_report_absence_ticket/#{absence.id}"
+                                                       class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fa fa-download"/> Imprimer Billet
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                <t t-if="not absences">
+                                    <p class="text-muted">Félicitations, vous n'avez aucune absence enregistrée !</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="portal_grade_template" name="Mon Bulletin">
+    <t t-call="website.layout">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Bulletin de Notes : <t t-esc="student.name"/></h2>
+                <a t-attf-href="/report/pdf/school.action_report_stud/#{student.id}" class="btn btn-primary">
+                    <i class="fa fa-print"/> Imprimer PDF
+                </a>
+            </div>
+
+            <div class="row mb-4 text-center">
+                <div class="col-md-4">
+                    <div class="card border-primary shadow-sm">
+                        <div class="card-header bg-primary text-white">Moyenne S1</div>
+                        <div class="card-body">
+                            <h3><span t-field="student.moyenne_s1"/></h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-primary shadow-sm">
+                        <div class="card-header bg-primary text-white">Moyenne S2</div>
+                        <div class="card-body">
+                            <h3><span t-field="student.moyenne_s2"/></h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-success shadow-sm">
+                        <div class="card-header bg-success text-white">Moyenne Annuelle</div>
+                        <div class="card-body">
+                            <h3><span t-field="student.moyenne_annuel"/></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">Détail des notes par semestre</div>
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Matière (Coef)</th>
+                            <th>Semestre</th>
+                            <th class="text-center">TD</th>
+                            <th class="text-center">TP</th>
+                            <th class="text-center">Contrôle</th>
+                            <th class="text-center bg-light">Moyenne</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="grade" t-as="g">
+                            <tr>
+                                <td>
+                                    <span t-field="g.matiere_id.name"/>
+                                    <small class="text-muted">(<span t-field="g.coef"/>)</small>
+                                </td>
+                                <td><span t-field="g.semester"/></td>
+                                <td class="text-center"><span t-field="g.notes1"/></td>
+                                <td class="text-center"><span t-field="g.notes2"/></td>
+                                <td class="text-center"><span t-field="g.notes3"/></td>
+                                <td class="text-center bg-light">
+                                    <strong><span t-field="g.moyenne_matiere"/></strong>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <t t-if="not grade">
+                <div class="alert alert-info mt-3">Aucune note n'est encore disponible pour cet étudiant.</div>
+            </t>
+        </div>
+    </t>
+    </template>
+
+    <template id="portal_dashboard_template" name="Tableau de Bord Étudiant">
+    <t t-call="website.layout">
+        <div class="container mt-4">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-body text-center">
+                       <h5>Mon Badge Numérique</h5>
+                        <img t-att-src="image_data_uri(student.qr_code)" style="max-width: 150px;"/>
+                          <p class="text-muted small">Présentez ce code pour l'appel</p>
+                      </div>
+                    </div>
+                    <div class="card bg-danger text-white shadow">
+                        <div class="card-body">
+                            <h5>Absences Non Justifiées</h5>
+                            <h2 class="mb-0"><t t-esc="abs_count"/></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning text-dark shadow">
+                        <div class="card-body">
+                            <h5>Justifications validé</h5>
+                            <h2 class="mb-0"><t t-esc="abs_valide_count"/></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white shadow">
+                        <div class="card-body">
+                            <h5>Moyenne Générale</h5>
+                            <h2 class="mb-0"><span t-field="student.moyenne_annuel"/></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white d-flex justify-content-between">
+                    <h5 class="mb-0">Mon Emploi du Temps</h5>
+                    <a t-if="program" t-attf-href="/report/pdf/school.action_report_emploidutemps/#{program.id}" class="btn btn-sm btn-light">Imprimer PDF</a>
+                </div>
+                <div class="card-body">
+                    <t t-set="days" t-value="[('0', 'Dimanche'), ('1', 'Lundi'), ('2', 'Mardi'), ('3', 'Mercredi'), ('4', 'Jeudi')]"/>
+                    <div class="row g-2">
+                        <t t-foreach="days" t-as="day">
+                            <div class="col-12 col-md">
+                                <div class="border rounded h-100">
+                                    <div class="bg-light fw-bold text-center py-2 border-bottom"><t t-esc="day[1]"/></div>
+                                    <div class="p-2">
+                                        <t t-set="slots" t-value="timetable.filtered(lambda slot: slot.day_of_week == day[0])"/>
+                                        <t t-if="not slots">
+                                            <p class="text-muted small mb-0">Aucun cours</p>
+                                        </t>
+                                        <t t-foreach="slots" t-as="line">
+                                            <div class="border rounded p-2 mb-2">
+                                                <div class="fw-bold">
+                                                    <t t-esc="'%02d:%02d' % (int(line.start_time), int((line.start_time % 1) * 60))"/>
+                                                    –
+                                                    <t t-esc="'%02d:%02d' % (int(line.end_time), int((line.end_time % 1) * 60))"/>
+                                                </div>
+                                                <div><span t-field="line.matiere_id.name"/></div>
+                                                <div class="small text-muted">
+                                                    <span t-field="line.type_cours"/>
+                                                    · <span t-field="line.room_id.name"/>
+                                                    · <span t-field="line.teacher_id.name"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    </template>
+
+    <template id="portal_my_home_student" inherit_id="portal.portal_my_home" priority="20">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+        <t t-call="portal.portal_docs_entry">
+            <t t-set="title">Mon Badge Étudiant</t>
+            <t t-set="url" t-value="'/my/student/badge'"/>
+            <t t-set="placeholder_count" t-value="'PDF'"/>
+        </t>
+    </xpath>
+    </template>
+
+    <template id="portal_reclamation_template" name="Mes Réclamations">
+    <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Réclamations</t>
+        </t>
+
+        <div class="row mb-3">
+            <div class="col-12 text-end">
+                <a href="/my/reclamation/new" class="btn btn-primary shadow-sm">
+                    <i class="fa fa-plus me-1"/> Nouvelle Réclamation
+                </a>
+            </div>
+        </div>
+
+        <t t-if="not ticket">
+            <div class="alert alert-info">Vous n'avez aucune réclamation en cours.</div>
+        </t>
+
+        <t t-if="ticket" t-call="portal.portal_table">
+            <thead>
+                <tr class="active">
+                    <th>Sujet</th>
+                    <th>Catégorie</th>
+                    <th class="text-center">Matière</th>
+                    <th class="text-end">État</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="ticket" t-as="ticket">
+                    <tr>
+                        <td><span t-field="ticket.name"/></td>
+                        <td><span t-field="ticket.category"/></td>
+                        <td class="text-center">
+                            <span t-if="ticket.matiere_id" t-field="ticket.matiere_id.name"/>
+                            <span t-else="" class="text-muted">-</span>
+                        </td>
+                        <td class="text-end">
+                            <span t-attf-class="badge rounded-pill #{'bg-info' if ticket.state == 'new' else 'bg-warning' if ticket.state == 'in_progress' else 'bg-success'}">
+                                <t t-esc="dict(ticket._fields['state'].selection).get(ticket.state)"/>
+                            </span>
+                        </td>
+                    </tr>
+                </t>
+            </tbody>
+        </t>
+    </t>
+    </template>
+
+    <template id="portal_new_reclamation_template" name="Déposer un Ticket">
+    <t t-call="portal.portal_layout">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-primary text-white p-3">
+                            <h5 class="mb-0"><i class="fa fa-info-circle me-2"/>Détails de la réclamation</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="/my/ticket/save" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Sujet</label>
+                                    <input type="text" name="name" class="form-control" required="1" placeholder="Ex: Erreur de note, Problème Wi-Fi..."/>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Catégorie</label>
+                                        <select name="category" class="form-select" required="1">
+                                            <option value="admin">Administratif</option>
+                                            <option value="tech">Technique</option>
+                                            <option value="pedago">Pédagogique</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Matière concernée</label>
+                                        <select name="matiere_id" class="form-select">
+                                            <option value="">-- Non applicable --</option>
+                                            <t t-foreach="matiere" t-as="m">
+                                                <option t-att-value="m.id"><t t-esc="m.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Description détaillée</label>
+                                    <textarea name="description" class="form-control" rows="6" placeholder="Expliquez votre problème ici..."></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a href="/my/reclamations" class="btn btn-light border">Retour</a>
+                                    <button type="submit" class="btn btn-primary px-4">Soumettre la demande</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    </template>
+
+   <template id="teacher_dashboard_template" name="Tableau de bord Professeur">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <h2 class="mb-4">Espace Professeur</h2>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Emploi du temps : <span t-esc="today_label"/></h5>
+                    </div>
+                    <div class="card-body">
+                        <div t-if="not sessions" class="alert alert-info">Aucun cours prévu pour aujourd'hui.</div>
+                        <div class="list-group">
+                            <t t-foreach="sessions" t-as="s">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">
+                                            <span t-esc="'%02d:%02d' % (int(s.start_time), int(s.start_time % 1 * 60))"/> -
+                                            <span t-esc="'%02d:%02d' % (int(s.end_time), int(s.end_time % 1 * 60))"/>
+                                        </h5>
+                                        <p class="mb-1"><strong><span t-field="s.matiere_id.name"/></strong> (<span t-field="s.type_cours"/>)</p>
+                                        <small class="text-muted">Classe : <span t-field="s.classe_id.name"/> | Salle : <span t-field="s.room_id.name"/></small>
+                                    </div>
+                                    <a t-attf-href="/my/teacher/session/#{s.id}" class="btn btn-success">
+                                        <i class="fa fa-qrcode"/> Faire l'appel
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="teacher_dashboard_template" name="Tableau de bord Professeur">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <h2 class="mb-4">Espace Professeur</h2>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Emploi du temps</h5>
+                    </div>
+                    <div class="card-body">
+                        <div t-if="not sessions" class="alert alert-info">Aucun cours prévu.</div>
+                        <div class="list-group">
+                            <t t-foreach="sessions" t-as="s">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><span t-field="s.matiere_id.name"/></strong>
+                                        <br/><small><span t-field="s.classe_id.name"/></small>
+                                        <h5 class="mb-1">
+                                          <span t-esc="'%02d:%02d' % (int(s.start_time), int((s.start_time % 1) * 60))"/> -
+                                          <span t-esc="'%02d:%02d' % (int(s.end_time), int((s.end_time % 1) * 60))"/>
+                                        </h5>
+                                    </div>
+                                    <a t-attf-href="/my/teacher/session/#{s.id}" class="btn btn-success">Faire l'appel</a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="teacher_attendance_template" name="Faire l'appel">
+    <t t-call="website.layout">
+        <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+        <div id="attendance_data" t-att-data-session-id="session.id" style="display:none;"></div>
+
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="reader" style="width: 100%; min-height: 300px; background: #000;"></div>
+                </div>
+                <div class="col-md-6">
+                    <div id="student-list" class="list-group">
+                        <t t-foreach="students" t-as="std">
+                            <div t-att-id="'student-card-' + str(std.id)" class="list-group-item d-flex justify-content-between align-items-center" style="border-left: 5px solid red;">
+                                <span t-field="std.name"/>
+                                <span class="badge bg-danger status-label">ABSENT</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <button type="button" id="BTN_VALIDER_FINAL" class="btn btn-success btn-lg px-5">
+                    TERMINER L'APPEL
+                </button>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataElem = document.getElementById('session_data');
+        const SESSION_ID = dataElem ? dataElem.getAttribute('data-session-id') : null;
+        var presentIds = [];
+
+        if (typeof Html5QrcodeScanner !== "undefined") {
+            // Configuration simplifiée pour la vidéo en direct
+            var scanner = new Html5QrcodeScanner("reader", {
+                fps: 20, // Plus d'images par seconde pour la fluidité
+                qrbox: {width: 250, height: 250},
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            });
+
+            scanner.render(onScanSuccess);
+
+            function onScanSuccess(decodedText) {
+                console.log("Code détecté :", decodedText);
+                if (decodedText.includes('STUDENT_ID:')) {
+                    var id = decodedText.split(':')[1].trim();
+                    var row = document.getElementById('student-card-' + id);
+                    if (row) {
+                        row.style.borderLeft = "10px solid green";
+                        row.querySelector('.status-label').className = "badge bg-success status-label";
+                        row.querySelector('.status-label').innerText = "PRÉSENT";
+                        if (!presentIds.includes(parseInt(id))) presentIds.push(parseInt(id));
+                    }
+                }
+            }
+        }
+
+        document.getElementById('BTN_VALIDER_FINAL').onclick = function() {
+            if (confirm("Valider l'appel ?")) {
+                fetch('/my/teacher/session/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        params: { session_id: parseInt(SESSION_ID), present_student_ids: presentIds }
+                    })
+                }).then(() => { window.location.href = "/my/teacher/dashboard"; });
+            }
+        };
+    });
+     </script>
+    </t>
+   </template>
+</odoo>

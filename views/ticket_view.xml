@@ -1,0 +1,97 @@
+<odoo>
+
+    <record id="view_school_ticket_list" model="ir.ui.view">
+        <field name="name">school.ticket.list</field>
+        <field name="model">school.ticket</field>
+        <field name="arch" type="xml">
+            <list string="Tickets" decoration-info="state == 'new'" decoration-success="state == 'solved'">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="category" widget="badge"
+                       decoration-warning="category == 'pedago'"
+                       decoration-info="category == 'admin'"/>
+                <field name="matiere_id" invisible="category != 'pedago'"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_ticket_kanban" model="ir.ui.view">
+    <field name="name">school.ticket.kanban</field>
+    <field name="model">school.ticket</field>
+    <field name="arch" type="xml">
+        <kanban default_group_by="state" sample="1">
+            <templates>
+                <t t-name="card">
+                    <div class="oe_kanban_global_click">
+                        <div class="o_kanban_record_top">
+                            <div class="o_kanban_record_headings">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_body">
+                            <field name="student_id"/>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <div class="oe_kanban_bottom_left">
+                                <field name="category" widget="label_selection"
+                                       options="{'classes': {'admin': 'info', 'tech': 'secondary', 'pedago': 'warning'}}"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+    </record>
+
+    <record id="view_school_ticket_form" model="ir.ui.view">
+        <field name="name">school.ticket.form</field>
+        <field name="model">school.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Ticket Support">
+                <header>
+                    <button name="action_solve" string="Marquer comme Résolu"
+                            type="object" class="oe_highlight"
+                            invisible="state == 'solved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,solved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Sujet du Ticket"/>
+                        <h1><field name="name" placeholder="Ex: Problème connexion WiFi"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="category" widget="radio" options="{'horizontal': True}"/>
+                        </group>
+                        <group>
+                            <field name="matiere_id"
+                                   invisible="category != 'pedago'"
+                                   required="category == 'pedago'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description de la demande" name="description">
+                            <field name="description" placeholder="Décrivez votre problème ici..." widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_school_ticket" model="ir.actions.act_window">
+        <field name="name">Support Étudiants</field>
+        <field name="res_model">school.ticket</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun ticket pour le moment.
+            </p>
+        </field>
+    </record>
+</odoo>

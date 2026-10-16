@@ -1,0 +1,94 @@
+<odoo>
+    <data>
+        <record id="action_report_emploidutemps" model="ir.actions.report">
+    <field name="name">Emploi du Temps</field>
+    <field name="model">school.program</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">school.report_emploidutemps_template</field>
+    <field name="report_file">school.report_emploidutemps_template</field>
+    <field name="print_report_name">'Emploi du Temps - %s' % (object.name)</field>
+    <field name="binding_model_id" ref="model_school_program"/>
+    <field name="binding_type">report</field>
+    </record>
+
+<template id="report_emploidutemps_template">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <style>
+                        .timetable-grid {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                            border: 2px solid black !important;
+                        }
+                        .timetable-grid th, .timetable-grid td {
+                            border: 1px solid black !important;
+                            padding: 8px;
+                            text-align: center;
+                            vertical-align: middle !important;
+                        }
+                        .timetable-grid th {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                            text-transform: capitalize;
+                        }
+                        .course-name { font-weight: bold; font-size: 13px; display: block; }
+                        .course-type { font-size: 10px; color: #333; }
+                        .room-orange {
+                            color: #e67e22 !important;
+                            font-weight: bold;
+                            font-size: 10px;
+                            margin-top: 3px;
+                        }
+                    </style>
+
+                    <h2 class="text-center" style="margin-top: 20px;">Emploi du Temps : <t t-esc="o.name"/></h2>
+                    <p class="text-center" style="font-size: 14px;">Semestre : <t t-esc="o.semester"/></p>
+
+                    <table class="timetable-grid">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Heures</th>
+                                <th>Dimanche</th>
+                                <th>Lundi</th>
+                                <th>Mardi</th>
+                                <th>Mercredi</th>
+                                <th>Jeudi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="slots" t-value="[8.5, 9.5, 10.5, 11.5, 13.0, 14.0, 15.0]"/>
+                            <t t-foreach="slots" t-as="slot">
+                                <tr style="height: 70px;">
+                                    <td style="font-weight: bold; background-color: #fcfcfc;">
+                                        <t t-esc="'%02d:%02d' % (int(slot), (slot % 1) * 60)"/> -
+                                        <t t-esc="'%02d:%02d' % (int(slot + 1.0), ((slot + 1.0) % 1) * 60)"/>
+                                    </td>
+                                    <t t-foreach="['0', '1', '2', '3', '4']" t-as="day">
+                                        <td>
+                                            <t t-set="course" t-value="o.env['school.timetable'].search([('program_id', '=', o.id), ('day_of_week', '=', day), ('start_time', '=', slot)], limit=1)"/>
+                                            <t t-if="course">
+                                                <span class="course-name"><t t-esc="course.matiere_id.name"/></span>
+                                                <span class="course-type">
+                                                    <t t-esc="course.type_cours.upper()"/> - <t t-esc="course.teacher_id.name"/>
+                                                </span>
+                                                <div t-if="course.room_id" class="room-orange">
+                                                    <t t-esc="course.room_id.name.upper()"/>
+                                                </div>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+    </data>
+</odoo>
+

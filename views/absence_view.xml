@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_school_absence_list" model="ir.ui.view">
+        <field name="name">school.absence.list</field>
+        <field name="model">school.absence</field>
+        <field name="arch" type="xml">
+            <list string="Absences" decoration-danger="not is_justified">
+                <field name="student_id"/>
+                <field name="matiere_id"/>
+                <field name="date_absence"/>
+                <field name="is_justified" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'pending'"
+                       decoration-success="state == 'valid'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_absence_form" model="ir.ui.view">
+        <field name="name">school.absence.form</field>
+        <field name="model">school.absence</field>
+        <field name="arch" type="xml">
+            <form string="Fiche Absence">
+                <header>
+                    <button name="action_set_pending" string="Soumettre" type="object"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+
+                    <button name="action_validate" string="Valider" type="object"
+                            class="oe_highlight" invisible="state != 'pending'"/>
+                    <button name="action_refuse" string="Refuser" type="object"
+                            invisible="state != 'pending'"/>
+
+                    <button name="action_draft" string="Remettre en brouillon" type="object"
+                            invisible="state != 'refused'"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,valid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="student_id"/>
+                        <h1><field name="student_id" options="{'no_create': True}"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="matiere_id"/>
+                            <field name="date_absence"/>
+                        </group>
+                        <group>
+                            <field name="is_justified" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Justification PDF" name="justification">
+                            <group>
+                                <field name="justification_file"
+                                       widget="pdf_viewer"
+                                       filename="justification_filename"
+                                       invisible="not is_justified"/>
+                                <field name="justification_filename" invisible="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_school_absence_kanban" model="ir.ui.view">
+        <field name="name">school.absence.kanban</field>
+        <field name="model">school.absence</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <templates>
+                    <t t-name="card">
+                        <field name="student_id" class="fw-bold"/>
+                        <field name="matiere_id"/>
+                        <field name="date_absence"/>
+                        <field name="is_justified" widget="boolean"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_school_absence" model="ir.actions.act_window">
+        <field name="name">Gestion des Absences</field>
+        <field name="res_model">school.absence</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Enregistrez une nouvelle absence ici.
+            </p>
+        </field>
+    </record>
+
+
+</odoo>

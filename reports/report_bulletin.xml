@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_report_stud" model="ir.actions.report">
+            <field name="name">Bulletin scolaire</field>
+            <field name="model">school.student</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">school.report_bulletin</field>
+            <field name="report_file">school.report_bulletin</field>
+            <field name="print_report_name">'Bulletin_%s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_school_student"/>
+            <field name="binding_type">report</field>
+        </record>
+        <template id="report_bulletin">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="student">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <style>
+                                .main-title {
+                                    text-align: center;
+                                    text-transform: uppercase;
+                                    border: 2px solid black;
+                                    padding: 10px;
+                                    margin-bottom: 30px;
+                                    background-color: #f8f9fa;
+                                }
+                                .info-table {
+                                    width: 100%;
+                                    margin-bottom: 20px;
+                                    border: none !important;
+                                }
+                                .bulletin-grid {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    border: 2px solid black !important;
+                                }
+                                .bulletin-grid th, .bulletin-grid td {
+                                    border: 1px solid black !important;
+                                    padding: 8px;
+                                    text-align: center;
+                                }
+                                .bulletin-grid th {
+                                    background-color: #eeeeee;
+                                    font-weight: bold;
+                                }
+                                .moyenne-final {
+                                    margin-top: 20px;
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    text-align: right;
+                                    padding-right: 20px;
+                                }
+                                .decision-box {
+                                    margin-top: 10px;
+                                    padding: 10px;
+                                    border: 1px dashed black;
+                                    width: fit-content;
+                                }
+                            </style>
+
+                            <div class="main-title">
+                                <h2 style="margin:0; font-weight: bold;">Bulletin de Notes</h2>
+                            </div>
+
+                            <table class="info-table">
+                                <tr>
+                                    <td style="width: 60%;">
+                                        <strong>Nom et Prénom :</strong> <span t-field="student.name" style="font-size: 16px;"/><br/>
+                                        <strong>Matricule :</strong> <span t-field="student.matricule"/><br/>
+                                        <strong>Niveau :</strong> <span t-field="student.niveau"/>
+                                    </td>
+                                    <td style="width: 40%; text-align: right; vertical-align: top;">
+                                        <strong>Année Scolaire :</strong> 2025-2026
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table class="bulletin-grid">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45%;">Matières</th>
+                                        <th>Coeff</th>
+                                        <th>Semestre</th>
+                                        <th>Note / 20</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="student.grade_id" t-as="n">
+                                        <tr>
+                                            <td style="text-align: left; padding-left: 15px;">
+                                                <span t-field="n.matiere_id.name"/>
+                                            </td>
+                                            <td>1.0</td> <td><span t-field="n.semester"/></td>
+                                            <td style="font-weight: bold;">
+                                                <span t-esc="'%.2f' % n.moyenne_matiere"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <div class="moyenne-final">
+                                MOYENNE GÉNÉRALE : <span style="font-size: 22px; border-bottom: 3px double black;">
+                                    <t t-esc="'%.2f' % student.moyenne_annuel"/> / 20
+                                </span>
+                            </div>
+
+                            <div class="decision-box">
+                                <strong>DÉCISION DU JURY : </strong>
+                                <t t-if="student.moyenne_annuel >= 10">
+                                    <span style="color: green;">ADMIS(E)</span>
+                                </t>
+                                <t t-else="">
+                                    <span style="color: red;">AJOURNÉ(E)</span>
+                                </t>
+                            </div>
+
+                            <div class="row" style="margin-top: 50px;">
+                                <div class="col-6 text-center">
+                                    <p style="text-decoration: underline;">Le Surveillant Général</p>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <p style="text-decoration: underline;">Le Directeur des Études</p>
+                                    <div style="margin-top: 10px; font-size: 10px; color: #ccc;">(Cachet et Signature)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

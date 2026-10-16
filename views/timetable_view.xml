@@ -1,0 +1,103 @@
+<odoo>
+    <record id="view_school_timetable_list" model="ir.ui.view">
+        <field name="name">school.timetable.list</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="day_of_week"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="classe_id"/>
+                <field name="matiere_id"/>
+                <field name="type_cours" widget="badge"/>
+                <field name="teacher_id"/>
+                <field name="room_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_school_timetable_form" model="ir.ui.view">
+        <field name="name">school.timetable.form</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="matiere_id"/>
+                        <h1><field name="matiere_id" placeholder="Matière"/></h1>
+                    </div>
+                    <group>
+                        <group string="Créneau">
+                            <field name="day_of_week"/>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                            <field name="type_cours"/>
+                        </group>
+                        <group string="Où et qui">
+                            <field name="classe_id"/>
+                            <field name="teacher_id"/>
+                            <field name="room_id"/>
+                            <field name="program_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_school_timetable_kanban" model="ir.ui.view">
+        <field name="name">school.timetable.kanban</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="day_of_week">
+                <field name="type_cours"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <strong>
+                                <field name="start_time" widget="float_time"/>
+                                –
+                                <field name="end_time" widget="float_time"/>
+                            </strong>
+                            <field name="type_cours" widget="badge"/>
+                        </div>
+                        <field name="matiere_id" class="fw-bold"/>
+                        <field name="classe_id"/>
+                        <div class="text-muted">
+                            <field name="teacher_id"/>
+                            ·
+                            <field name="room_id"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_school_timetable_search" model="ir.ui.view">
+        <field name="name">school.timetable.search</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="classe_id"/>
+                <field name="matiere_id"/>
+                <field name="teacher_id"/>
+                <field name="room_id"/>
+                <filter name="cours" string="Cours" domain="[('type_cours', '=', 'cours')]"/>
+                <filter name="td" string="TD" domain="[('type_cours', '=', 'td')]"/>
+                <filter name="tp" string="TP" domain="[('type_cours', '=', 'tp')]"/>
+                <separator/>
+                <filter name="group_day" string="Jour" context="{'group_by': 'day_of_week'}"/>
+                <filter name="group_class" string="Classe" context="{'group_by': 'classe_id'}"/>
+                <filter name="group_teacher" string="Professeur" context="{'group_by': 'teacher_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_timetable" model="ir.actions.act_window">
+        <field name="name">Emploi du temps</field>
+        <field name="res_model">school.timetable</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_school_timetable_search"/>
+    </record>
+</odoo>

@@ -1,0 +1,108 @@
+<odoo>
+    <record id="view_grade_list" model="ir.ui.view">
+        <field name="name">school.grade.list</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="moyenne_matiere &gt; 0 and moyenne_matiere &lt; 10"
+                  decoration-success="moyenne_matiere &gt;= 10">
+                <field name="student_id"/>
+                <field name="classe_id"/>
+                <field name="matiere_id"/>
+                <field name="semester"/>
+                <field name="coef"/>
+                <field name="notes1" string="TD"/>
+                <field name="notes2" string="TP"/>
+                <field name="notes3" string="Contrôle"/>
+                <field name="moyenne_matiere" string="Moyenne"/>
+                <field name="somme_matiere" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_grade_form" model="ir.ui.view">
+        <field name="name">school.grade.form</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="student_id"/>
+                        <h1><field name="student_id" placeholder="Étudiant"/></h1>
+                    </div>
+                    <group>
+                        <group string="Matière">
+                            <field name="classe_id" readonly="1"/>
+                            <field name="semester"/>
+                            <field name="allowed_matiere_ids" invisible="1"/>
+                            <field name="matiere_id"
+                                   domain="[('id', 'in', allowed_matiere_ids)]"
+                                   options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="coef"/>
+                            <field name="specialite_id" readonly="1" force_save="1"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes1"/>
+                            <field name="notes2"/>
+                            <field name="notes3"/>
+                            <field name="moyenne_matiere" readonly="1"/>
+                            <field name="somme_matiere" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_grade_kanban" model="ir.ui.view">
+        <field name="name">school.grade.kanban</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="semester">
+                <field name="moyenne_matiere"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <field name="student_id" class="fw-bold"/>
+                            <field name="moyenne_matiere" class="fw-bold"/>
+                        </div>
+                        <field name="matiere_id"/>
+                        <field name="classe_id" class="text-muted"/>
+                        <div class="text-muted mt-1">
+                            TD <field name="notes1"/>
+                            · TP <field name="notes2"/>
+                            · Contrôle <field name="notes3"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_grade_search" model="ir.ui.view">
+        <field name="name">school.grade.search</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="matiere_id"/>
+                <field name="classe_id"/>
+                <filter name="s1" string="Semestre 1" domain="[('semester', '=', 'S1')]"/>
+                <filter name="s2" string="Semestre 2" domain="[('semester', '=', 'S2')]"/>
+                <filter name="below" string="Sous 10" domain="[('moyenne_matiere', '&gt;', 0), ('moyenne_matiere', '&lt;', 10)]"/>
+                <separator/>
+                <filter name="group_class" string="Classe" context="{'group_by': 'classe_id'}"/>
+                <filter name="group_student" string="Étudiant" context="{'group_by': 'student_id'}"/>
+                <filter name="group_subject" string="Matière" context="{'group_by': 'matiere_id'}"/>
+                <filter name="group_semester" string="Semestre" context="{'group_by': 'semester'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_grade" model="ir.actions.act_window">
+        <field name="name">Notes</field>
+        <field name="res_model">school.grade</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_grade_search"/>
+        <field name="context">{'search_default_group_semester': 1}</field>
+    </record>
+</odoo>

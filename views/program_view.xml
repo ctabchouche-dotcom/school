@@ -1,0 +1,65 @@
+<odoo>
+    <!-- LIST VIEW -->
+    <record id="view_program_list_v3" model="ir.ui.view">
+        <field name="name">school.program.list</field>
+        <field name="model">school.program</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="classe_id"/>
+                <field name="semester"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="view_program_form_v3" model="ir.ui.view">
+        <field name="name">school.program.form</field>
+        <field name="model">school.program</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="classe_id"
+                           widget="many2many_tags"
+                           options="{'no_create': True}"
+                           placeholder="Cliquez pour choisir les classes..."/>
+                        <field name="semester"/>
+                    </group>
+                    <notebook>
+                        <page string="Volumes horaires">
+                            <field name="volume_horaire_id">
+                            <list editable="bottom">
+                                  <field name="matiere_id"/>
+                            </list>
+                            </field>
+                        </page>
+                        <page string="Supprimer emploi du temps">
+                            <button
+                                name="action_reset_timetable"
+                                type="object"
+                                string="Supprimer emploi du temps"
+                                class="btn-primary"/>
+                        </page>
+                        <page string="Emploi du temps">
+                            <button
+                                name="action_generate_timetable"
+                                type="object"
+                                string="Générer l'emploi du temps"
+                                class="btn-primary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_program" model="ir.actions.act_window">
+        <field name="name">Program</field>
+        <field name="res_model">school.program</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_program_list_v3"/>
+    </record>
+
+</odoo>

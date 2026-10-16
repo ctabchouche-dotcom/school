@@ -1,0 +1,66 @@
+<odoo>
+
+    <!-- Vue liste -->
+    <record id="view_specialite_list" model="ir.ui.view">
+        <field name="name">school.specialite.list</field>
+        <field name="model">school.specialite</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue formulaire -->
+    <record id="view_specialite_form" model="ir.ui.view">
+        <field name="name">school.specialite.form</field>
+        <field name="model">school.specialite</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    <button name="action_view_students" type="object" class="oe_stat_button" icon="fa-users">
+                        <field name="student_count" widget="statinfo" string="Étudiants"/>
+                    </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Matieres">
+                            <field name="matiere_id">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="coef"/>
+                                    <field name="professeur_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                    <notebook>
+                        <page string="Étudiants">
+                            <field name="students_id">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="age"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_specialite" model="ir.actions.act_window">
+        <field name="name">specialites</field>
+        <field name="res_model">school.specialite</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,92 @@
+<odoo>
+    <data>
+        <record id="action_report_absence_ticket" model="ir.actions.report">
+            <field name="name">Billet d'Absence</field>
+            <field name="model">school.absence</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">school.report_absence_template</field>
+            <field name="report_file">school.report_absence_template</field>
+            <field name="print_report_name">'Absence_%s' % (object.student_id.name)</field>
+            <field name="binding_model_id" ref="model_school_absence"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="report_absence_template">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <style>
+                        .absence-card {
+                            width: 100%;
+                            border: 2px solid black !important;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        .absence-card td {
+                            border: 1px solid black !important;
+                            padding: 12px;
+                            font-size: 14px;
+                        }
+                        .label-cell {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                            width: 30%;
+                        }
+                        .title-header {
+                            background-color: #333;
+                            color: white;
+                            padding: 10px;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                    </style>
+
+                    <div class="title-header">
+                        <h2 style="margin: 0; color: white;">BILLET D'ABSENCE</h2>
+                    </div>
+
+                    <table class="absence-card">
+                        <tr>
+                            <td class="label-cell">Étudiant :</td>
+                            <td><span t-field="doc.student_id.name" style="font-size: 18px; font-weight: bold;"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Date de l'absence :</td>
+                            <td><span t-field="doc.date_absence" t-options='{"widget": "date"}'/></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Matière concernée :</td>
+                            <td><span t-field="doc.matiere_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">État de justification :</td>
+                            <td style="font-weight: bold;">
+                                <t t-if="doc.is_justified">
+                                    <span style="color: green;">JUSTIFIÉE</span>
+                                </t>
+                                <t t-else="">
+                                    <span style="color: red;">NON JUSTIFIÉE</span>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="row mt-5">
+                        <div class="col-6">
+                            <p><strong>Remarques :</strong></p>
+                            <div style="border-bottom: 1px dashed black; width: 100%; height: 20px;"></div>
+                            <div style="border-bottom: 1px dashed black; width: 100%; height: 20px;"></div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <p><strong>Cachet de l'Administration</strong></p>
+                            <div style="border: 2px solid black; height: 120px; width: 220px; margin: 0 auto; background-color: #fafafa;"></div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </t>
+    </template>
+    </data>
+</odoo>

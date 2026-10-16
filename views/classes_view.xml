@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Vue liste -->
+    <record id="view_classes_list" model="ir.ui.view">
+        <field name="name">school.classes.list</field>
+        <field name="model">school.classes</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="niveau"/>
+                <field name="state_classe"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue formulaire -->
+    <record id="view_classes_form" model="ir.ui.view">
+        <field name="name">school.classes.form</field>
+        <field name="model">school.classes</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_open"
+                        type="object"
+                        string="Ouvrir"
+                        class="btn-primary"
+                        invisible="state_classe != 'draft'"
+                    />
+
+                    <button
+                        name="action_full"
+                        type="object"
+                        string="Classe complète"
+                        class="btn-warning"
+                        invisible="state_classe != 'open'"
+                    />
+
+                    <button
+                        name="action_close"
+                        type="object"
+                        string="Clôturer"
+                        class="btn-danger"
+                        invisible="state_classe != 'full'"
+                    />
+
+                    <field name="state_classe" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <group>
+                        <field name="name" readonly="state_classe == 'close'"/>
+                        <field name="niveau" readonly="state_classe =='close'"/>
+                        <field name="matiere_id" readonly="state_classe =='close'"/>
+                        <field name="program_id" readonly="state_classe =='close'"/>
+                        <field name="capacity" readonly="state_classe =='close'"/>
+                        <field name="specialite_id" readonly="state_classe =='close'"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Étudiants">
+                            <field name="student_id" readonly="state_classe == 'close'">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="age"/>
+                                    <field name="specialite_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_classes" model="ir.actions.act_window">
+        <field name="name">Classes</field>
+        <field name="res_model">school.classes</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

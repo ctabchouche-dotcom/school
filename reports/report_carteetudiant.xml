@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_student_badge" model="ir.actions.report">
+        <field name="name">Badge Étudiant</field>
+        <field name="model">school.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">school.report_student_badge_template</field>
+        <field name="report_file">school.report_student_badge_template</field>
+        <field name="print_report_name">'Badge_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_school_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_student_badge_template">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="font-family: 'Helvetica', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center;">
+
+                    <div style="width: 440px; height: 260px; border: 1px solid #1e5631; border-radius: 15px; overflow: hidden; position: relative; background: #ffffff; margin-bottom: 30px;">
+                        <div style="position: absolute; top: 0; left: 0; width: 180px; height: 100%; background: #1e5631; clip-path: polygon(0 0, 100% 0, 60% 100%, 0% 100%); z-index: 1;"></div>
+                        <div style="position: absolute; top: 15px; right: 15px; text-align: right; z-index: 3;">
+                            <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" style="max-height: 50px;"/>
+                            <h3 style="margin:5px 0 0 0; color: #1e5631; font-size: 18px; font-weight: bold;">MON ÉCOLE</h3>
+                        </div>
+                        <div style="position: absolute; bottom: 30px; left: 20px; z-index: 4; color: white;">
+                            <h2 style="margin:0; font-size: 18px; font-weight: bold;">CARTE ÉTUDIANT</h2>
+                        </div>
+                    </div>
+
+                    <div style="width: 440px; height: 260px; border: 1px solid #1e5631; border-radius: 15px; background: white; overflow: hidden;">
+
+                        <div style="background: #a4de02; padding: 8px 15px; height: 35px; border-bottom: 1px solid #1e5631;">
+                            <table style="width: 100%; border: none;">
+                                <tr>
+                                    <td style="font-weight: bold; font-size: 12px; color: #1e5631; text-transform: uppercase;">
+                                        <t t-esc="o.specialite_id.name or 'INFORMATIQUE'"/>
+                                    </td>
+                                    <td style="text-align: right; font-weight: bold; font-size: 12px; color: #1e5631;">2025/2026</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <table style="width: 100%; height: 225px; border-collapse: collapse; table-layout: fixed;">
+                            <tr>
+                                <td style="width: 280px; padding: 15px; vertical-align: top;">
+                                    <div style="margin-bottom: 10px;">
+                                        <span style="font-size: 9px; color: #777; font-weight: bold; display: block;">MATRICULE</span>
+                                        <span style="font-size: 16px; font-weight: bold; color: #1e5631;"><t t-esc="o.matricule or '0000'"/></span>
+                                    </div>
+
+                                    <div style="margin-bottom: 10px;">
+                                        <span style="font-size: 9px; color: #777; font-weight: bold; display: block;">NOM ET PRÉNOM</span>
+                                        <span style="font-size: 14px; font-weight: bold; text-transform: uppercase; color: #333;">
+                                            <t t-esc="o.name"/>
+                                        </span>
+                                    </div>
+
+                                    <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px;">
+                                        <div style="font-family: 'monospace'; font-size: 14px; letter-spacing: 2px; color: #1e5631; font-weight: bold;">
+                                            |||| || ||||| ||| ||
+                                        </div>
+                                        <span style="font-size: 9px; color: #777;">ID SYSTÈME : <t t-esc="o.id"/></span>
+                                    </div>
+                                </td>
+
+                                <td style="width: 160px; padding: 10px; text-align: center; vertical-align: middle; background: #f9fdf9; border-left: 1px solid #eee;">
+
+                                    <div style="width: 90px; height: 110px; border: 2px solid #a4de02; border-radius: 5px; overflow: hidden; background: #fff; margin: 0 auto 10px auto;">
+                                        <img t-if="o.image_1920" t-att-src="image_data_uri(o.image_1920)" style="width: 100%; height: 100%; object-fit: cover;"/>
+                                        <div t-else="" style="font-size: 10px; padding-top: 45px; color: #ccc;">PHOTO</div>
+                                    </div>
+
+                                    <div style="margin: 0 auto;">
+                                        <img t-if="o.qr_code" t-att-src="image_data_uri(o.qr_code)" style="width: 60px; height: 60px;"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

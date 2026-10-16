@@ -1,0 +1,104 @@
+<odoo>
+    <record id="view_student_list" model="ir.ui.view">
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+        <list>
+            <field name="name"/>
+            <field name="age"/> <field name="specialite_id"/>
+            <field name="moyenne_annuel"/>
+            <field name="state" widget="badge"/>
+            <field name="qr_code" widget="image" options="{'size': [150, 150]}"/>
+        </list>
+      </field>
+    </record>
+
+    <record id="view_student_form" model="ir.ui.view">
+        <field name="name">school.student.form</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmer"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_activate" type="object" string="Activer"
+                            class="btn-success" invisible="state != 'confirmed'"/>
+                    <button name="action_archive" type="object" string="Archiver"
+                            invisible="state == 'archived'"/>
+                    <button name="%(action_report_stud)d" string="Bulletin scolaire"
+                            type="action"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,active,archived"/>
+                </header>
+
+                <sheet>
+                    <chatter>
+                       <field name="message_follower_ids" groups="base.group_user"/>
+                       <field name="activity_ids"/>
+                       <field name="message_ids"/>
+                    </chatter>
+                    <field name="image_1920" widget="image" class="oe_avatar" options='{"size": [150, 150]}'/>
+                    <field name="qr_code" widget="image" options="{'size': [150, 150]}" readonly="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nom de l'étudiant"/></h1>
+                        <h2><field name="user_id" placeholder="User associé"/> </h2>
+                    </div>
+
+                    <group>
+                        <group string="Informations Personnelles">
+                            <field name="age"/>
+                            <field name="nationality"/>
+                            <field name="email"/>
+                            <field name="matricule"/>
+                            <field name="is_major" readonly="1"/>
+                            <field name="is_algerian" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Scolarité">
+                            <field name="specialite_id"/>
+                            <field name="niveau"/>
+                            <field name="classe_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Résultats">
+                        <group>
+                            <field name="moyenne_s1"/>
+                            <field name="moyenne_s2"/>
+                        </group>
+                        <group>
+                            <field name="moyenne_annuel"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Historique des états" name="history">
+                            <field name="log_ids" readonly="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                    <field name="old_state"/>
+                                    <field name="new_state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_student_graph" model="ir.ui.view">
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+        <graph string="Répartition par Spécialité" type="pie">
+            <field name="specialite_id"/>
+            <field name="moyenne_annuel" type="measure"/>
+        </graph>
+      </field>
+    </record>
+
+    <record id="action_student" model="ir.actions.act_window">
+        <field name="name">Etudiants</field>
+        <field name="res_model">school.student</field>
+        <field name="view_mode">list,form,graph</field>
+    </record>
+</odoo>

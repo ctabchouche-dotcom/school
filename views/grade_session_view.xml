@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_grade_session_list" model="ir.ui.view">
+        <field name="name">school.grade_session.list</field>
+        <field name="model">school.grade_session</field>
+        <field name="arch" type="xml">
+            <list string="Sessions de Notes">
+                <field name="classe_id"/>
+                <field name="matiere_id"/>
+                <field name="semester"/>
+                <field name="moyenne_classe" avg="Moyenne Globale"/>
+                <field name="taux_reussite" widget="progressbar"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_grade_session_form" model="ir.ui.view">
+        <field name="name">school.grade_session.form</field>
+        <field name="model">school.grade_session</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_load_students"
+                            string="Charger les étudiants"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="line_ids != []"/>
+
+                    <button name="action_load_students"
+                            string="Actualiser la liste"
+                            type="object"
+                            confirm="Attention : cela va réinitialiser les notes. Continuer ?"
+                            invisible="line_ids == []"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-calculator">
+                            <field name="moyenne_classe" string="Moy. Classe" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-graduation-cap">
+                            <field name="taux_reussite" string="Réussite %" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="classe_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="matiere_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="semester"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Saisie des Notes" name="grades">
+                            <field name="line_ids" nolabel="1">
+                                <list editable="bottom"
+                                      decoration-danger="moyenne_matiere &lt; 10"
+                                      decoration-success="moyenne_matiere &gt;= 10">
+                                    <field name="student_id" readonly="1" force_save="1"/>
+                                    <field name="notes1"/>
+                                    <field name="notes2"/>
+                                    <field name="notes3"/>
+                                    <field name="moyenne_matiere" readonly="1" force_save="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_grade_session_kanban" model="ir.ui.view">
+        <field name="name">school.grade_session.kanban</field>
+        <field name="model">school.grade_session</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="classe_id">
+                <templates>
+                    <t t-name="card">
+                        <field name="matiere_id" class="fw-bold"/>
+                        <field name="semester"/>
+                        <div>Moyenne <field name="moyenne_classe"/></div>
+                        <field name="taux_reussite" widget="progressbar"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_grade_session_search" model="ir.ui.view">
+        <field name="name">school.grade_session.search</field>
+        <field name="model">school.grade_session</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="classe_id"/>
+                <field name="matiere_id"/>
+                <filter name="s1" string="Semestre 1" domain="[('semester', '=', 'S1')]"/>
+                <filter name="s2" string="Semestre 2" domain="[('semester', '=', 'S2')]"/>
+                <separator/>
+                <filter name="group_class" string="Classe" context="{'group_by': 'classe_id'}"/>
+                <filter name="group_subject" string="Matière" context="{'group_by': 'matiere_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_grade_session" model="ir.actions.act_window">
+        <field name="name">Sessions de Notes</field>
+        <field name="res_model">school.grade_session</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_grade_session_search"/>
+    </record>
+
+    <menuitem id="menu_grade_session_sub"
+              name="Saisie par Classe"
+              parent="menu_grade"
+              action="action_grade_session"
+              sequence="10"/>
+
+</odoo>

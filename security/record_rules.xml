@@ -1,0 +1,81 @@
+<odoo>
+    <record id="rule_student_own_data" model="ir.rule">
+     <field name="name">L'étudiant voit ses propres infos</field>
+     <field name="model_id" ref="model_school_student"/>
+     <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+     <field name="domain_force">[('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_manager_see_all" model="ir.rule">
+     <field name="name">Manager voit tout</field>
+     <field name="model_id" ref="model_school_student"/>
+     <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+     <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_student_absences" model="ir.rule">
+     <field name="name">L'étudiant voit uniquement ses absences</field>
+     <field name="model_id" ref="model_school_absence"/>
+     <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+     <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_student_grades" model="ir.rule">
+     <field name="name">L'étudiant voit uniquement son grade</field>
+     <field name="model_id" ref="model_school_grade"/>
+     <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+     <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_student_tickets" model="ir.rule">
+     <field name="name">L'étudiant voit uniquement ses tickets</field>
+     <field name="model_id" ref="model_school_ticket"/>
+     <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+     <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_student_own_class" model="ir.rule">
+     <field name="name">L'étudiant voit uniquement son groupe/classe</field>
+     <field name="model_id" ref="model_school_classes"/>
+     <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+     <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+    </record>
+
+<record id="rule_student_program" model="ir.rule">
+    <field name="name">L'étudiant voit uniquement son programme</field>
+    <field name="model_id" ref="model_school_program"/>
+    <field name="groups" eval="[(4, ref('school.group_school_user'))]"/>
+    <field name="domain_force">[('classe_id.student_id.user_id', '=', user.id)]</field>
+</record>
+
+    <record id="rule_manager_absences" model="ir.rule">
+        <field name="name">Manager voit toutes les absences</field>
+        <field name="model_id" ref="model_school_absence"/>
+        <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_manager_grades" model="ir.rule">
+        <field name="name">Manager voit toutes les notes</field>
+        <field name="model_id" ref="model_school_grade"/>
+        <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_manager_tickets" model="ir.rule">
+        <field name="name">Manager voit tous les tickets</field>
+        <field name="model_id" ref="model_school_ticket"/>
+        <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_manager_classes" model="ir.rule">
+        <field name="name">Manager voit toutes les classes</field>
+        <field name="model_id" ref="model_school_classes"/>
+        <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_manager_program" model="ir.rule">
+        <field name="name">Manager voit tous les programmes</field>
+        <field name="model_id" ref="model_school_program"/>
+        <field name="groups" eval="[(4, ref('school.group_school_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>
